@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\MahasiswaController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/create', [MahasiswaController::class, 'create']);
-Route::post('store-mahasiswa', [MahasiswaController::class, 'store']);
-Route::get('/read', [MahasiswaController::class, 'read']);
-Route::get('/delete', [MahasiswaController::class, 'delete']);
-Route::get('/edit', [MahasiswaController::class, 'edit']);
-
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/dashboard', function ()
+{
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+Route::get('/login', function ()
+{
+    //return response("Anda tidak diizinkan");
+})->name("login");
+

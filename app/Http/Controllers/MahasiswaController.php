@@ -2,64 +2,85 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Http\Request;
 
 class MahasiswaController extends Controller
 {
-    public function index()
+   public function index()
     {
-        return view('mahasiswa');
+        return 'hai index';
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
-        return view('mahasiswa.create');
+        //
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        // echo "<pre>";
-        $data = $request->all();
-        unset($data['_token']);
-        // print_r($data);
-        $nim = @$request->nim;
-
-        if ($model = Mahasiswa::find($nim)) {
-            $data['update_at'] = date("Y-m-d H:i:s");
-            $model->update($data);
-        } else {
-            $model = new Mahasiswa();
-            $data['created_at'] = date("Y-m-d H:i:s");
-            $data['updated_at'] = date("Y-m-d H:i:s");
-            $model->insert($data);
-        }
-        return redirect('create')->with('status', 'Data mahasiswa berhasil disimpan/diedit');
+        Mahasiswa::create($request->json()->all());
+        return response()->json(['status' => 'berhasil'], 200);
     }
 
-    public function delete(Request $request)
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Mahasiswa  $mahasiswa
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Mahasiswa $mahasiswa, $nim)
     {
-        $nim = $request->nim;
-        $model = Mahasiswa::find($nim);
-        $model->delete();
-        $data = Mahasiswa::all();
-        return view('mahasiswa.read', ['datanya' => $data]);
+        $mahasiswa = Mahasiswa::where('nim', $nim)->first();
+        return $mahasiswa;
     }
 
-    public function edit(Request $request)
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Mahasiswa  $mahasiswa
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Mahasiswa $mahasiswa)
     {
-        $nim = $request->nim;
-        $data = Mahasiswa::find($nim);
-        // $data=Mahasiswa::all();
-        return view('mahasiswa.edit', ['datanya' => $data]);
+        //
     }
 
-    public function read()
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Mahasiswa  $mahasiswa
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Mahasiswa $mahasiswa)
     {
-        $model = new Mahasiswa;
-        $data = $model->all();
-        // echo "<pre>";
-        return view('mahasiswa.read', ['datanya' => $data]);
+        $mahasiswa = Mahasiswa::where('nim', $request->json('nim'))->first();
+        $mahasiswa->update($request->json()->all());
+        return response()->json(['status' => 'berhasil'], 200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Mahasiswa  $mahasiswa
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Mahasiswa $mahasiswa, $nim)
+    {
+        $mahasiswa = Mahasiswa::where('nim', $nim)->first();
+        $mahasiswa->delete();
+        return response()->json(['status' => 'terhapus'], 200);
     }
 }
